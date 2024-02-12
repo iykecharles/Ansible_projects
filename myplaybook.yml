@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install apache 2
+      dnf:
+        name: httpd
+        state: present
