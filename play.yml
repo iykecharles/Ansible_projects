@@ -7,4 +7,15 @@
       dnf:
         name: tmux
         state: present
+      when: ansible_distribution == "Amazon"
 
+    - name: install apache2 on the servers
+      dnf:
+       name: httpd # its apache2 for apt
+       state: present
+      when: ansible_distribution == "Amazon"
+
+    - name: update the applications cache.
+      dnf:
+        update_cache: yes
+      when: ansible_distribution == "Amazon" 
