@@ -1,0 +1,29 @@
+---
+
+- name: Install apache and updates to ubuntu servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Remove packages such as  apache2, python on Ubuntu
+      package:
+        name:
+          - python3
+          - php
+          - tmux
+          - apache2
+          - nano
+        state: absent
+        #update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Remove packages such as python, httpd on Amazon
+      dnf:
+        name:
+          - python3
+          - php
+          - tmux
+          - httpd
+          - nano
+        state: absent
+       # update_cache: yes
+      when: ansible_distribution == "Amazon"

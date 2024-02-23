@@ -1,0 +1,106 @@
+---
+
+- name: Install updates on ubuntu servers
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Install updates on Ubuntu
+      tags: always
+      package:
+        only_upgrade: true
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install updates on Amazon
+      tags: always
+      dnf:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "Amazon"
+
+- name: Install and download work tools eg terraform into my workstation
+  hosts: workstation
+  become: true
+  tasks:
+    - name: install unzip
+      dnf:
+        name: unzip
+
+    - name: downloadn and unarchive terraform from  the net.
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.7.4/terraform_1.7.4_windows_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        owner: root
+        group: root
+        mode: 755
+
+- name: Install packages on ubuntu and Amazon servers
+  hosts: webservers
+  become: true
+  tasks:
+    - name: install apache2 and updates on Ubuntu
+      tags: apache
+      package:
+        name:
+          - python3
+          - php
+          - tmux
+          - apache2
+          - nano
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install httpd and updates on Amazon
+      tags:
+        - httpd
+        - python3
+        - nano
+      dnf:
+        name:
+          - python3
+          - php
+          - tmux
+          - httpd
+          - nano
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Amazon"
+
+    - name: start and enable httpd
+      tags: [restart, httpd]
+      service:
+        name: httpd
+        state: started
+        enabled: no
+      when: ansible_distribution == "Amazon"
+
+
+    - name: Copy a html file to the webservers
+      tags: [copy, html]
+      copy:
+        src: project.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 644
+- name: Install packages on database servers
+  hosts: db_servers
+  become: true
+  tasks:
+    - name: install mysql-server on Ubuntu
+      tags: [db, database, mysql, mysql-server]
+      package:
+        name:
+          - mysql-server
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install postgres  on Amazon
+      dnf:
+        name:
+          - postgresql15-server
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Amazon"
