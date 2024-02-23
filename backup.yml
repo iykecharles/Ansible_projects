@@ -1,0 +1,55 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: install updates (Ubuntu)
+      apt:
+       # update_only: yes
+        update_cache: yes
+      when ansible_distribution == "Ubuntu"
+
+- hosts: webserver
+  become: true
+  tasks:
+
+  - name: install updates (Ubuntu)
+    apt:
+      name:
+        - php
+        - apache2
+        - tmux
+        - nano
+      state: latest
+    when ansible_distribution == "Ubuntu"
+
+  - name: install updates (Amazon)
+    dnf:
+      name:
+        - php
+        - httpd
+        - tmux
+        - nano
+      state: latest
+    when ansible_distribution == "Amazon"
+
+- hosts: db_server
+  become: true
+  tasks:
+
+  - name: install dababase package (Ubuntu)
+    apt:
+      name:
+        - mariadb-server
+        - postgres
+      state: latest
+    when ansible_distribution == "Ubuntu"
+
+  - name: install database package (Amazon)
+    dnf:
+      name:
+        - mariadb-server
+        - postgres
+      state: latest
+    when ansible_distribution == "Amazon"
