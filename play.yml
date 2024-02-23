@@ -5,7 +5,9 @@
   tasks:
     - name: install tmux package
       dnf:
-        name: tmux
+        name:
+          - tmux
+          - php
         state: present
       when: ansible_distribution == "Amazon"
 
