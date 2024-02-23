@@ -1,8 +1,18 @@
 ---
-- hosts: all
+
+- name: Install apache and updates to ubuntu servers
+  hosts: all
   become: true
   tasks:
-    - name: install apache 2
-      dnf:
-        name: httpd
-        state: present
+    - name: install apache2 and updates on Ubuntu
+      package:
+        package: 
+          - "{{ php_package }}"
+          - "{{ tmux_package }}"
+          - "{{ apache2_package }}"
+          - "{{ nano_package }}"
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+  
